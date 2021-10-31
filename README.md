@@ -2,8 +2,10 @@
 
 This is an uidai aadhaar sso webapp made with django.
 
-### Live Demo : [![UIDAI Hackathon](./core/static/images/favicon.ico)](https://github.com/Rajarshi07/UIDAI_Hackathon)
+### Live Demo : [![UIDAI Hackathon](./core/static/images/favicon.ico)](http://143.110.248.104:8000/)
 
+
+Verifier : https://github.com/Anupam96786/UIDAI_Verifier
 
 ## Technology Stack
 
