@@ -7,6 +7,13 @@ This is an uidai aadhaar sso webapp made with django.
 
 Verifier : https://github.com/Anupam96786/UIDAI_Verifier
 
+## DEMO:
+
+
+
+https://user-images.githubusercontent.com/35489362/139874870-f1bb8027-4932-45ed-ada0-b8cc68a38072.mp4
+
+
 ## Technology Stack
 
 1. HTML5
