@@ -84,7 +84,9 @@
 
     <script>
         var scannedText, ApiKey;
+        window.addEventListener("load",()=>{
         if (localStorage.getItem("aadhaarZipBase64") != null) {
+            handleSCAN(window.location.href);
             document.getElementById("scan_qr_form").setAttribute("style", "");
             document.getElementById("ekycform").setAttribute("style", "display:none;");
             const html5QrCode = new Html5Qrcode("reader");
@@ -101,24 +103,35 @@
                 // });
             };
             const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-            html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+            try{
+                html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+            }catch{
+                
+                document.getElementById("messages").innerHTML = "Camera not supported in browser. Use Phone Camera instead";
+            }
         } else {
-
-            document.getElementById("messages").innerHTML = `Offline EKYC Not Found`;
+            document.getElementById("ekycform").setAttribute("style", "");
+            handleSCAN(window.location.href);
+            document.getElementById("scan_qr_form").setAttribute("style", "");
+            document.getElementById("scan_qr_form").setAttribute("style", "display:none;");
+            document.getElementById("messages").innerHTML = `Upload the EKYC and scan the code again.`;
+            
         }
+        })
         function handleSCAN(scannedText) {
             url = new URL(scannedText);
-            ApiKey = url.searchParams.get('ApiKey');
+            ApiKey = url.searchParams.get('apikey');
             if (ApiKey) {
+                document.getElementById("scan_qr_form").setAttribute("style", "display:block");
                 document.getElementById("messages").innerHTML = "QR scanned successfully";
                 document.getElementById("password").removeAttribute("hidden");
                 document.getElementById("btn_submit").removeAttribute("hidden");
                 document.getElementById("btn_submit").removeAttribute("disabled");
-                html5QrCode.clear();
+                // html5QrCode.clear();
             } else {
-                // document.getElementById("messages").innerHTML = "Invalid QR Code";
-                document.getElementById("scan_qr_form").setAttribute("style", "");
-                document.getElementById("ekycform").setAttribute("style", "display:none;");
+                document.getElementById("messages").innerHTML = "Scan QR Code Again";
+                // document.getElementById("scan_qr_form").setAttribute("style", "");
+                // document.getElementById("ekycform").setAttribute("style", "display:none;");
             }
         }
 
@@ -137,14 +150,16 @@
             }
             return cookieValue;
         }
+        var text;
         async function sendData() {
             console.log(scannedText);
-            console.log(scannedText["ApiKey"]);
+            // console.log(scannedText["ApiKey"]);
             const reader = new zip.ZipReader(new zip.Data64URIReader(localStorage.getItem("aadhaarZipBase64")))
             const entries = await reader.getEntries()
+            try{
             if (entries.length) {
                 // get first entry content as text by using a TextWriter
-                const text = await entries[0].getData(
+                text = await entries[0].getData(
                     // writer
                     new zip.TextWriter(),
                     // options
@@ -155,6 +170,13 @@
                         }
                     }
                 );
+                
+                document.getElementById("messages").innerHTML="Sending Document";
+            }
+                }catch{
+                    document.getElementById("messages").innerHTML="Incorrect Password";
+                    return;
+                }
                 // text contains the entry data as a String
                 $.ajax({
                     type: 'post',
@@ -171,7 +193,6 @@
                     contentType: "application/json; charset=utf-8",
                     success: function (data) {
                         console.log(data);
-
                         document.getElementById("messages").innerHTML = `Uploaded successfully`;
                     },
                     error: function (data) {
@@ -180,11 +201,6 @@
                     }
                 });
             }
-        }
-        window.addEventListener("load",()=>{
-            url = new URL(window.location.href);
-            handleSCAN(url);
-        })
     </script>
 
 </html>
